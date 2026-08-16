@@ -947,13 +947,13 @@ def get_all_interests(imdb_id: str, locale: Optional[str] = None):
     if not raw_json:
         logger.warning("No interests found for title %s", imdb_id)
         return []
-    interests = []
+    interests = {}
     interests_edges = raw_json.get("interests", {}).get("edges", [])
     for edge in interests_edges:
         node = edge.get("node", {})
         primary_text = node.get("primaryText", {}).get("text", "")
         if primary_text:
-            interests.append(primary_text)
+            interests[node.get("id")] = primary_text
     logger.debug("Fetched %d interests for title %s", len(interests), imdb_id)
     return interests
 
@@ -1270,6 +1270,7 @@ def _get_extended_title_info(imdb_id, locale=None) -> dict:
             interests(first: 20) {
               edges {
                 node {
+                  id
                   primaryText {
                     text
                   }
